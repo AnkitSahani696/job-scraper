@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JobRadar — Find Your Dream Job</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:        #0a0a0f;
+      --bg2:       #111118;
+      --bg3:       #1a1a24;
+      --border:    rgba(255,255,255,0.07);
+      --border2:   rgba(255,255,255,0.12);
+      --accent:    #6c63ff;
+      --accent2:   #ff6b6b;
+      --accent3:   #43e8a0;
+      --text:      #f0f0f5;
+      --text2:     #9898b0;
+      --text3:     #5a5a72;
+      --naukri:    #ff6600;
+      --indeed:    #2557a7;
+      --linkedin:  #0a66c2;
+      --card-glow: rgba(108,99,255,0.08);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Animated background ── */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 20%, rgba(108,99,255,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 30% at 80% 80%, rgba(67,232,160,0.07) 0%, transparent 50%),
+        radial-gradient(ellipse 50% 40% at 60% 10%, rgba(255,107,107,0.06) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+      animation: bgShift 20s ease-in-out infinite alternate;
+    }
+    @keyframes bgShift {
+      0%   { transform: translate(0,0) rotate(0deg); }
+      100% { transform: translate(2%, 2%) rotate(2deg); }
+    }
+
+    /* ── Header ── */
+    header {
+      position: relative; z-index: 10;
+      padding: 20px 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      background: rgba(10,10,15,0.8);
+    }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 22px; font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fff 30%, var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .logo span { color: var(--accent); -webkit-text-fill-color: var(--accent); }
+
+    .source-pills { display: flex; gap: 8px; }
+    .spill {
+      padding: 5px 12px; border-radius: 20px;
+      font-size: 11px; font-weight: 600; letter-spacing: .5px;
+      border: 1px solid var(--border2);
+      color: var(--text2);
+      transition: all .2s;
+    }
+    .spill.n { border-color: rgba(255,102,0,.4); color: #ff6600; background: rgba(255,102,0,.08); }
+    .spill.i { border-color: rgba(37,87,167,.4); color: #5b9bf5; background: rgba(37,87,167,.08); }
+    .spill.l { border-color: rgba(10,102,194,.4); color: #4da6ff; background: rgba(10,102,194,.08); }
+
+    /* ── Hero section ── */
+    .hero {
+      position: relative; z-index: 5;
+      padding: 56px 48px 40px;
+      text-align: center;
+    }
+    .hero-tag {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 14px; border-radius: 20px;
+      border: 1px solid rgba(108,99,255,.3);
+      background: rgba(108,99,255,.08);
+      font-size: 12px; color: #a09bff; font-weight: 500;
+      margin-bottom: 20px;
+      animation: fadeDown .6s ease both;
+    }
+    .hero-tag::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent3); box-shadow: 0 0 6px var(--accent3);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800; line-height: 1.1;
+      letter-spacing: -1.5px;
+      margin-bottom: 12px;
+      animation: fadeDown .6s .1s ease both;
+    }
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent), var(--accent3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero p {
+      color: var(--text2); font-size: 15px; font-weight: 300;
+      margin-bottom: 36px;
+      animation: fadeDown .6s .2s ease both;
+    }
+    @keyframes fadeDown {
+      from { opacity:0; transform: translateY(-12px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    /* ── Search Box ── */
+    .search-box {
+      position: relative; z-index: 5;
+      max-width: 860px; margin: 0 auto 32px;
+      animation: fadeDown .6s .3s ease both;
+    }
+    .search-card {
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      padding: 20px 20px 16px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.5), 0 0 0 1px rgba(108,99,255,.1);
+    }
+    .search-main {
+      display: flex; gap: 10px; margin-bottom: 14px;
+    }
+    .input-wrap {
+      flex: 1; position: relative;
+    }
+    .input-wrap svg {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      width: 18px; height: 18px; color: var(--text3); pointer-events: none;
+    }
+    .s-input {
+      width: 100%; padding: 13px 14px 13px 42px;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 12px; font-size: 14px; color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      outline: none; transition: border .2s, box-shadow .2s;
+    }
+    .s-input::placeholder { color: var(--text3); }
+    .s-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(108,99,255,.15);
+    }
+
+    /* Source toggle */
+    .src-wrap {
+      display: flex; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+    }
+    .src-btn {
+      padding: 0 16px; font-size: 12px; font-weight: 600;
+      cursor: pointer; border: none; background: transparent;
+      color: var(--text3); transition: all .18s; white-space: nowrap;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .src-btn:not(:last-child) { border-right: 1px solid var(--border); }
+    .src-btn.active           { background: var(--accent); color: #fff; }
+    .src-btn.active.naukri    { background: var(--naukri); }
+    .src-btn.active.indeed    { background: var(--indeed); }
+    .src-btn.active.linkedin  { background: var(--linkedin); }
+
+    .search-btn {
+      padding: 0 28px; background: var(--accent);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      font-family: 'Syne', sans-serif;
+      transition: all .2s; white-space: nowrap;
+      box-shadow: 0 4px 20px rgba(108,99,255,.4);
+    }
+    .search-btn:hover { background: #7c74ff; transform: translateY(-1px); box-shadow: 0 6px 24px rgba(108,99,255,.5); }
+    .search-btn:active { transform: translateY(0); }
+    .search-btn:disabled { background: var(--bg3); color: var(--text3); box-shadow: none; cursor: not-allowed; }
+
+    /* Location row */
+    .loc-row {
+      display: flex; gap: 8px; flex-wrap: wrap; align-items: center;
+      padding-top: 4px;
+    }
+    .loc-label {
+      font-size: 11px; color: var(--text3); font-weight: 500;
+      white-space: nowrap; padding-left: 2px;
+    }
+    .s-select {
+      padding: 9px 12px; background: var(--bg3);
+      border: 1px solid var(--border); border-radius: 10px;
+      font-size: 13px; color: var(--text2);
+      font-family: 'DM Sans', sans-serif;
+      outline: none; cursor: pointer; transition: border .2s;
+    }
+    .s-select:focus { border-color: var(--accent); }
+    .s-select option { background: #1a1a24; }
+
+    .loc-badge {
+      display: none; align-items: center; gap: 6px;
+      padding: 5px 12px; border-radius: 20px;
+      background: rgba(67,232,160,.08);
+      border: 1px solid rgba(67,232,160,.2);
+      font-size: 12px; color: var(--accent3); font-weight: 500;
+    }
+    .loc-badge.show { display: inline-flex; }
+    .loc-badge button {
+      background: none; border: none; color: var(--text3);
+      cursor: pointer; font-size: 13px; padding: 0; line-height: 1;
+    }
+
+    /* Quick chips */
+    .chips {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      max-width: 860px; margin: 0 auto;
+      animation: fadeDown .6s .4s ease both;
+    }
+    .chips-label { font-size: 12px; color: var(--text3); align-self: center; }
+    .chip {
+      padding: 6px 14px; border-radius: 20px;
+      border: 1px solid var(--border2);
+      background: transparent; color: var(--text2);
+      font-size: 12px; font-weight: 500; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all .18s;
+    }
+    .chip:hover {
+      border-color: var(--accent); color: #fff;
+      background: rgba(108,99,255,.12);
+    }
+
+    /* ── Status ── */
+    .status-bar {
+      position: relative; z-index: 5;
+      padding: 12px 48px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--text3);
+      min-height: 44px;
+    }
+    .loader {
+      display: none; width: 18px; height: 18px;
+      border: 2px solid var(--bg3); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Results ── */
+    .results-section { position: relative; z-index: 5; padding: 0 48px 60px; }
+
+    .results-header {
+      display: none; align-items: center;
+      justify-content: space-between; padding: 16px 0 14px;
+    }
+    .results-header h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 16px; font-weight: 700; color: var(--text);
+    }
+    .count-badge {
+      padding: 4px 14px; border-radius: 20px;
+      background: rgba(108,99,255,.15);
+      border: 1px solid rgba(108,99,255,.25);
+      font-size: 12px; color: #a09bff; font-weight: 600;
+    }
+
+    /* Filter tabs */
+    .filter-tabs { display: none; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+    .ftab {
+      padding: 5px 16px; border-radius: 20px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      border: 1px solid var(--border2);
+      color: var(--text3); background: transparent;
+      transition: all .18s; font-family: 'DM Sans', sans-serif;
+    }
+    .ftab.active        { border-color: var(--accent); color: #a09bff; background: rgba(108,99,255,.1); }
+    .ftab.active.naukri { border-color: var(--naukri); color: var(--naukri); background: rgba(255,102,0,.08); }
+    .ftab.active.indeed { border-color: #5b9bf5; color: #5b9bf5; background: rgba(37,87,167,.08); }
+    .ftab.active.linkedin { border-color: #4da6ff; color: #4da6ff; background: rgba(10,102,194,.08); }
+
+    /* Jobs grid */
+    .jobs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
+    }
+
+    /* Job card */
+    .job-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 20px 22px;
+      transition: all .25s; cursor: default;
+      position: relative; overflow: hidden;
+      animation: cardIn .4s ease both;
+    }
+    @keyframes cardIn {
+      from { opacity:0; transform: translateY(16px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    .job-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(108,99,255,.4), transparent);
+      opacity: 0; transition: opacity .25s;
+    }
+    .job-card:hover {
+      border-color: rgba(108,99,255,.3);
+      background: var(--bg3);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 40px rgba(0,0,0,.4), 0 0 0 1px rgba(108,99,255,.15);
+    }
+    .job-card:hover::before { opacity: 1; }
+    .job-card.from-naukri:hover { border-color: rgba(255,102,0,.3); }
+    .job-card.from-naukri:hover::before { background: linear-gradient(90deg, transparent, rgba(255,102,0,.4), transparent); }
+    .job-card.from-indeed:hover { border-color: rgba(91,155,245,.3); }
+    .job-card.from-indeed:hover::before { background: linear-gradient(90deg, transparent, rgba(91,155,245,.4), transparent); }
+    .job-card.from-linkedin:hover { border-color: rgba(77,166,255,.3); }
+    .job-card.from-linkedin:hover::before { background: linear-gradient(90deg, transparent, rgba(77,166,255,.4), transparent); }
+
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+    .job-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3; flex: 1; }
+
+    .src-badge {
+      font-size: 10px; padding: 3px 9px; border-radius: 8px;
+      font-weight: 700; margin-left: 10px; white-space: nowrap; letter-spacing: .3px;
+    }
+    .src-badge.naukri  { background: rgba(255,102,0,.12); color: #ff8533; border: 1px solid rgba(255,102,0,.2); }
+    .src-badge.indeed  { background: rgba(91,155,245,.12); color: #5b9bf5; border: 1px solid rgba(91,155,245,.2); }
+    .src-badge.linkedin{ background: rgba(77,166,255,.12); color: #4da6ff; border: 1px solid rgba(77,166,255,.2); }
+
+    .job-company { font-size: 13px; color: var(--accent); font-weight: 500; margin-bottom: 12px; }
+
+    .job-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .meta-tag {
+      font-size: 11px; padding: 3px 10px; border-radius: 8px;
+      border: 1px solid var(--border); color: var(--text2);
+      background: var(--bg3); display: flex; align-items: center; gap: 4px;
+    }
+    .meta-tag.exp  { border-color: rgba(255,193,7,.2); color: #ffc107; background: rgba(255,193,7,.06); }
+    .meta-tag.sal  { border-color: rgba(67,232,160,.2); color: var(--accent3); background: rgba(67,232,160,.06); }
+    .meta-tag.loc  { border-color: rgba(108,99,255,.2); color: #a09bff; background: rgba(108,99,255,.06); }
+    .meta-tag.date { border-color: rgba(255,107,107,.2); color: #ff9b9b; background: rgba(255,107,107,.06); }
+
+    .skills-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+    .skill-chip {
+      font-size: 11px; padding: 3px 10px; border-radius: 20px;
+      background: rgba(108,99,255,.1); color: #a09bff;
+      border: 1px solid rgba(108,99,255,.15); font-weight: 500;
+    }
+
+    .divider { height: 1px; background: var(--border); margin-bottom: 14px; }
+
+    .apply-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 18px; border-radius: 10px;
+      font-size: 12px; font-weight: 600; text-decoration: none;
+      font-family: 'Syne', sans-serif;
+      transition: all .2s; letter-spacing: .3px;
+    }
+    .apply-btn svg { width: 12px; height: 12px; }
+    .apply-btn:hover { transform: translateY(-1px); }
+    .apply-btn.naukri  { background: rgba(255,102,0,.15); color: #ff8533; border: 1px solid rgba(255,102,0,.25); }
+    .apply-btn.naukri:hover  { background: rgba(255,102,0,.25); }
+    .apply-btn.indeed  { background: rgba(91,155,245,.15); color: #5b9bf5; border: 1px solid rgba(91,155,245,.25); }
+    .apply-btn.indeed:hover  { background: rgba(91,155,245,.25); }
+    .apply-btn.linkedin{ background: rgba(77,166,255,.15); color: #4da6ff; border: 1px solid rgba(77,166,255,.25); }
+    .apply-btn.linkedin:hover{ background: rgba(77,166,255,.25); }
+
+    /* Empty / Error */
+    .empty-state {
+      grid-column: 1/-1; text-align: center; padding: 80px 20px; color: var(--text3);
+    }
+    .empty-icon { font-size: 48px; margin-bottom: 16px; opacity: .5; }
+    .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 18px; color: var(--text2); margin-bottom: 6px; }
+    .empty-state p  { font-size: 14px; }
+
+    .error-box {
+      grid-column: 1/-1;
+      background: rgba(255,107,107,.06); border: 1px solid rgba(255,107,107,.2);
+      border-radius: 12px; padding: 16px 20px;
+      color: #ff9b9b; font-size: 13px;
+    }
+
+    @media(max-width:640px){
+      header,.hero,.status-bar,.results-section{ padding-left:20px; padding-right:20px; }
+      .search-main{ flex-wrap: wrap; }
+      .src-wrap{ width: 100%; }
+      .search-btn{ width: 100%; justify-content: center; padding: 14px; }
+      .jobs-grid{ grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="logo">Job<span>Radar</span></div>
+  <div class="source-pills">
+    <span class="spill n">Naukri</span>
+    <span class="spill i">Indeed</span>
+    <span class="spill l">LinkedIn</span>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-tag">Real-time job search across 3 platforms</div>
+  <h1>Find your <em>exact</em> role,<br/>not just any job</h1>
+  <p>Search Data Analyst — get only Data Analyst, not random results</p>
+</div>
+
+<!-- Search -->
+<div class="search-box" style="position:relative;z-index:5;padding:0 48px 0;margin-bottom:20px">
+  <div class="search-card">
+    <div class="search-main">
+      <div class="input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <input class="s-input" type="text" id="titleInput"
+          placeholder="Job title... e.g. Data Analyst, ML Engineer"
+          onkeydown="if(event.key==='Enter') doSearch()"/>
+      </div>
+      <div class="src-wrap">
+        <button class="src-btn all active" onclick="setSource('all',this)">All</button>
+        <button class="src-btn naukri"     onclick="setSource('naukri',this)">Naukri</button>
+        <button class="src-btn indeed"     onclick="setSource('indeed',this)">Indeed</button>
+        <button class="src-btn linkedin"   onclick="setSource('linkedin',this)">LinkedIn</button>
+      </div>
+      <button class="search-btn" id="searchBtn" onclick="doSearch()">Search →</button>
+    </div>
+
+    <!-- Location -->
+    <div class="loc-row">
+      <span class="loc-label">Location</span>
+      <select class="s-select" id="countrySelect" onchange="onCountryChange()">
+        <option value="">Any Country</option>
+        <optgroup label="Asia">
+          <option value="India">🇮🇳 India</option>
+          <option value="Singapore">🇸🇬 Singapore</option>
+          <option value="UAE">🇦🇪 UAE</option>
+          <option value="Japan">🇯🇵 Japan</option>
+          <option value="Australia">🇦🇺 Australia</option>
+        </optgroup>
+        <optgroup label="Americas">
+          <option value="USA">🇺🇸 USA</option>
+          <option value="Canada">🇨🇦 Canada</option>
+        </optgroup>
+        <optgroup label="Europe">
+          <option value="UK">🇬🇧 UK</option>
+          <option value="Germany">🇩🇪 Germany</option>
+          <option value="Netherlands">🇳🇱 Netherlands</option>
+        </optgroup>
+        <optgroup label="Remote">
+          <option value="Remote">🌐 Remote</option>
+        </optgroup>
+      </select>
+
+      <select class="s-select" id="stateSelect" onchange="onStateChange()" style="display:none">
+        <option value="">Any State</option>
+      </select>
+
+      <input class="s-input" type="text" id="cityInput"
+        placeholder="City (optional)" style="display:none;max-width:160px;padding:9px 14px"
+        oninput="updateLocBadge()"
+        onkeydown="if(event.key==='Enter') doSearch()"/>
+
+      <div class="loc-badge" id="locBadge">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+        </svg>
+        <span id="locText"></span>
+        <button onclick="clearLocation()">✕</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick chips -->
+<div class="chips" style="position:relative;z-index:5;padding:0 48px;margin-bottom:32px">
+  <span class="chips-label">Try:</span>
+  <div class="chip" onclick="quickSearch('Data Analyst')">Data Analyst</div>
+  <div class="chip" onclick="quickSearch('ML Engineer')">ML Engineer</div>
+  <div class="chip" onclick="quickSearch('Data Scientist')">Data Scientist</div>
+  <div class="chip" onclick="quickSearch('Python Developer')">Python Developer</div>
+  <div class="chip" onclick="quickSearch('Data Engineer')">Data Engineer</div>
+  <div class="chip" onclick="quickSearch('Business Analyst')">Business Analyst</div>
+  <div class="chip" onclick="quickSearch('AI Engineer')">AI Engineer</div>
+  <div class="chip" onclick="quickSearch('NLP Engineer')">NLP Engineer</div>
+</div>
+
+<!-- Status -->
+<div class="status-bar">
+  <div class="loader" id="loader"></div>
+  <span id="statusText">Search karo upar — teeno platforms ek saath search honge</span>
+</div>
+
+<!-- Results -->
+<div class="results-section">
+  <div class="results-header" id="resultsHeader">
+    <h3 id="resultsTitle"></h3>
+    <span class="count-badge" id="countBadge"></span>
+  </div>
+  <div class="filter-tabs" id="filterTabs"></div>
+  <div class="jobs-grid" id="jobsGrid"></div>
+</div>
+
+<script>
+  const STATES = {
+    India:['Andhra Pradesh','Bihar','Delhi','Gujarat','Haryana','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Punjab','Rajasthan','Tamil Nadu','Telangana','Uttar Pradesh','West Bengal'],
+    USA:['California','Texas','New York','Florida','Illinois','Washington','Massachusetts','Georgia','Pennsylvania','North Carolina','Ohio','Michigan','Arizona','Colorado','Virginia'],
+    UK:['England','Scotland','Wales','Northern Ireland'],
+    Canada:['Ontario','British Columbia','Quebec','Alberta','Manitoba'],
+    Australia:['New South Wales','Victoria','Queensland','Western Australia','South Australia'],
+    Germany:['Berlin','Bavaria','Hamburg','North Rhine-Westphalia','Baden-Württemberg'],
+  };
+
+  let selectedSource = 'all';
+  let allFetchedJobs = [];
+
+  function onCountryChange(){
+    const c = document.getElementById('countrySelect').value;
+    const s = document.getElementById('stateSelect');
+    const ci = document.getElementById('cityInput');
+    s.innerHTML = '<option value="">Any State</option>';
+    if(STATES[c]){
+      STATES[c].forEach(st=>{ const o=document.createElement('option'); o.value=st; o.textContent=st; s.appendChild(o); });
+      s.style.display='block';
+    } else { s.style.display='none'; }
+    ci.style.display = c ? 'block' : 'none';
+    ci.placeholder = c ? `City in ${c}` : 'City';
+    updateLocBadge();
+  }
+  function onStateChange(){ updateLocBadge(); }
+  function updateLocBadge(){
+    const c  = document.getElementById('countrySelect').value;
+    const st = document.getElementById('stateSelect').value;
+    const ci = document.getElementById('cityInput').value.trim();
+    const parts = [ci,st,c].filter(Boolean);
+    const badge = document.getElementById('locBadge');
+    if(parts.length){ document.getElementById('locText').textContent=parts.join(', '); badge.classList.add('show'); }
+    else badge.classList.remove('show');
+  }
+  function clearLocation(){
+    document.getElementById('countrySelect').value='';
+    document.getElementById('stateSelect').style.display='none';
+    document.getElementById('cityInput').style.display='none';
+    document.getElementById('cityInput').value='';
+    document.getElementById('locBadge').classList.remove('show');
+  }
+  function getLocation(){
+    const c  = document.getElementById('countrySelect').value;
+    const st = document.getElementById('stateSelect').value;
+    const ci = document.getElementById('cityInput').value.trim();
+    return [ci,st,c].filter(Boolean).join(', ');
+  }
+  function setSource(src,btn){
+    selectedSource=src;
+    document.querySelectorAll('.src-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  function quickSearch(t){ document.getElementById('titleInput').value=t; doSearch(); }
+
+  async function doSearch(){
+    const title = document.getElementById('titleInput').value.trim();
+    const loc   = getLocation();
+    const btn   = document.getElementById('searchBtn');
+    const loader= document.getElementById('loader');
+    const status= document.getElementById('statusText');
+
+    if(!title){ status.textContent='Job title likhna zaroori hai!'; document.getElementById('titleInput').focus(); return; }
+
+    btn.disabled=true; loader.style.display='block';
+    const lbl={all:'Naukri + Indeed + LinkedIn',naukri:'Naukri.com',indeed:'Indeed.com',linkedin:'LinkedIn'}[selectedSource];
+    status.textContent=`"${title}"${loc?' in '+loc:''} — ${lbl} search ho rahi hai...`;
+    document.getElementById('jobsGrid').innerHTML='';
+    document.getElementById('resultsHeader').style.display='none';
+    document.getElementById('filterTabs').style.display='none';
+
+    try{
+      const p=new URLSearchParams({title,source:selectedSource});
+      if(loc) p.append('location',loc);
+      const res=await fetch(`/search?${p}`);
+      const data=await res.json();
+      if(!res.ok) throw new Error(data.error||'Server error');
+      allFetchedJobs=data.jobs;
+      renderJobs(allFetchedJobs,data.query,data.location);
+      buildTabs(allFetchedJobs,data.query,data.location);
+    }catch(err){
+      loader.style.display='none'; btn.disabled=false;
+      status.textContent='Search fail hua.';
+      document.getElementById('jobsGrid').innerHTML=`<div class="error-box">Error: ${err.message}<br><small>Server chal raha hai? PyCharm terminal check karo.</small></div>`;
+    }
+  }
+
+  function buildTabs(jobs,q,loc){
+    const n=jobs.filter(j=>j.source==='Naukri.com').length;
+    const i=jobs.filter(j=>j.source==='Indeed.com').length;
+    const l=jobs.filter(j=>j.source==='LinkedIn').length;
+    const tabs=document.getElementById('filterTabs');
+    const active=[
+      {key:'all',label:`All (${jobs.length})`,cls:'all'},
+      n>0?{key:'naukri',label:`Naukri (${n})`,cls:'naukri'}:null,
+      i>0?{key:'indeed',label:`Indeed (${i})`,cls:'indeed'}:null,
+      l>0?{key:'linkedin',label:`LinkedIn (${l})`,cls:'linkedin'}:null,
+    ].filter(Boolean);
+    if(active.length<=2){tabs.style.display='none';return;}
+    tabs.style.display='flex';
+    tabs.innerHTML=active.map((s,idx)=>`<div class="ftab ${s.cls} ${idx===0?'active':''}" onclick="filterBy('${s.key}',this,'${esc(q)}','${esc(loc||'')}')">${s.label}</div>`).join('');
+  }
+
+  function filterBy(src,btn,q,loc){
+    document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
+    btn.classList.add('active');
+    let f=allFetchedJobs;
+    if(src==='naukri') f=f.filter(j=>j.source==='Naukri.com');
+    if(src==='indeed') f=f.filter(j=>j.source==='Indeed.com');
+    if(src==='linkedin') f=f.filter(j=>j.source==='LinkedIn');
+    renderJobs(f,q,loc);
+  }
+
+  function renderJobs(jobs,query,loc){
+    const loader=document.getElementById('loader');
+    const status=document.getElementById('statusText');
+    const grid=document.getElementById('jobsGrid');
+    const header=document.getElementById('resultsHeader');
+    const btn=document.getElementById('searchBtn');
+    loader.style.display='none'; btn.disabled=false;
+    header.style.display='flex';
+    const lt=loc?` in ${loc}`:'';
+    document.getElementById('resultsTitle').textContent=`Results for "${query}"${lt}`;
+    document.getElementById('countBadge').textContent=`${jobs.length} jobs found`;
+    status.textContent=`${jobs.length} jobs mili "${query}"${lt} ke liye`;
+
+    if(!jobs.length){
+      grid.innerHTML=`<div class="empty-state"><div class="empty-icon">🔭</div><h3>No jobs found</h3><p>Try a different title or location</p></div>`;
+      return;
+    }
+    grid.innerHTML=jobs.map((job,idx)=>{
+      const s=job.source==='Naukri.com'?'naukri':job.source==='Indeed.com'?'indeed':'linkedin';
+      const al=s==='naukri'?'Apply on Naukri':s==='indeed'?'Apply on Indeed':'View on LinkedIn';
+      const arrow=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M7 7h10v10"/></svg>`;
+      return `<div class="job-card from-${s}" style="animation-delay:${idx*0.05}s">
+        <div class="card-top">
+          <div class="job-title">${esc(job.title)}</div>
+          <span class="src-badge ${s}">${esc(job.source)}</span>
+        </div>
+        <div class="job-company">${esc(job.company)}</div>
+        <div class="job-meta">
+          ${job.experience&&job.experience!=='N/A'?`<span class="meta-tag exp">⏱ ${esc(job.experience)}</span>`:''}
+          ${job.salary&&job.salary!=='Not disclosed'?`<span class="meta-tag sal">💰 ${esc(job.salary)}</span>`:''}
+          ${job.location&&job.location!=='N/A'?`<span class="meta-tag loc">📍 ${esc(job.location)}</span>`:''}
+          ${job.posted&&job.posted!=='N/A'?`<span class="meta-tag date">🕐 ${esc(job.posted)}</span>`:''}
+        </div>
+        ${job.skills&&job.skills.length?`<div class="skills-row">${job.skills.map(sk=>`<span class="skill-chip">${esc(sk)}</span>`).join('')}</div>`:''}
+        <div class="divider"></div>
+        <a class="apply-btn ${s}" href="${esc(job.url)}" target="_blank" rel="noopener">${al} ${arrow}</a>
+      </div>`;
+    }).join('');
+  }
+
+  function esc(s){
+    if(!s)return'';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+  }
+</script>
+</body>
+</html>
